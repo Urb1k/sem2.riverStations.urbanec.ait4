@@ -1,0 +1,60 @@
+﻿@page
+@model sem2.riverStations.urbanec.ait4.Pages.Shared.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Stations</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Stations.ID" />
+            <div class="form-group">
+                <label asp-for="Stations.River" class="control-label"></label>
+                <input asp-for="Stations.River" class="form-control" />
+                <span asp-validation-for="Stations.River" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Stations.FloodWarningValue" class="control-label"></label>
+                <input asp-for="Stations.FloodWarningValue" class="form-control" />
+                <span asp-validation-for="Stations.FloodWarningValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Stations.DroughtWarningValue" class="control-label"></label>
+                <input asp-for="Stations.DroughtWarningValue" class="form-control" />
+                <span asp-validation-for="Stations.DroughtWarningValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Stations.TimeToleranceInMin" class="control-label"></label>
+                <input asp-for="Stations.TimeToleranceInMin" class="form-control" />
+                <span asp-validation-for="Stations.TimeToleranceInMin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Stations.CreatedByUser" class="control-label"></label>
+                <input asp-for="Stations.CreatedByUser" class="form-control" />
+                <span asp-validation-for="Stations.CreatedByUser" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Stations.CreatedOn" class="control-label"></label>
+                <input asp-for="Stations.CreatedOn" class="form-control" />
+                <span asp-validation-for="Stations.CreatedOn" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

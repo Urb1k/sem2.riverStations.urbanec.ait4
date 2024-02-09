@@ -1,0 +1,66 @@
+﻿@page
+@model sem2.riverStations.urbanec.ait4.Pages.Shared.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Stations[0].River)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stations[0].FloodWarningValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stations[0].DroughtWarningValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stations[0].TimeToleranceInMin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stations[0].CreatedByUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stations[0].CreatedOn)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Stations) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.River)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FloodWarningValue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DroughtWarningValue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TimeToleranceInMin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedByUser)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedOn)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

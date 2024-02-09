@@ -1,0 +1,34 @@
+﻿@page
+@model sem2.riverStations.urbanec.ait4.Pages.HistoryOfValuesModel
+
+@{
+    ViewData["Title"] = "History Values List";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Station</th>
+                <th>Timestamp</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.HistoryValuesList)
+            {
+                var riverName = item.Stations?.River ?? "Unknown"; // Default to "Unknown" if River is null
+                var floodWarningValue = item.Stations?.FloodWarningValue ?? 0;
+                <tr>
+                    <td>@item.ID</td>
+                    <td>@riverName</td>
+                    <td>@item.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td style="@(item.Value > floodWarningValue ? "color: red;" : "")">@item.Value</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -12,9 +12,6 @@ namespace sem2.riverStations.urbanec.ait4.Pages
             _logger = logger;
         }
 
-        public void OnGet()
-        {
-        }
     }
 
 }

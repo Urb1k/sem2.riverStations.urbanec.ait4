@@ -11,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="post">
+        <form method="post" onsubmit="return validateForm()">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Stations.River" class="control-label"></label>
@@ -34,11 +34,6 @@
                 <span asp-validation-for="Stations.TimeToleranceInMin" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Stations.CreatedByUser" class="control-label"></label>
-                <input asp-for="Stations.CreatedByUser" class="form-control" />
-                <span asp-validation-for="Stations.CreatedByUser" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -46,9 +41,29 @@
 </div>
 
 <div>
-    <a asp-page="Index">Back to List</a>
+    <a asp-page="Stations">Back to List</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        function validateForm() {
+            var floodWarningValue = parseFloat(document.querySelector('[name="Stations.FloodWarningValue"]').value);
+            var droughtWarningValue = parseFloat(document.querySelector('[name="Stations.DroughtWarningValue"]').value);
+            var timeToleranceInMin = parseInt(document.querySelector('[name="Stations.TimeToleranceInMin"]').value);
+
+            if (floodWarningValue <= droughtWarningValue) {
+                alert("Flood Warning Value must be greater than Drought Warning Value.");
+                return false;
+            }
+
+            if (timeToleranceInMin < 30) {
+                alert("Time Tolerance must be at least 30 minutes.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 }

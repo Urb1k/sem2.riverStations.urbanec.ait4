@@ -52,9 +52,29 @@
 </div>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Stations">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+    function validateForm() {
+        var floodWarningValue = parseFloat(document.querySelector('[name="Stations.FloodWarningValue"]').value);
+        var droughtWarningValue = parseFloat(document.querySelector('[name="Stations.DroughtWarningValue"]').value);
+        var timeToleranceInMin = parseInt(document.querySelector('[name="Stations.TimeToleranceInMin"]').value);
+
+        if (floodWarningValue <= droughtWarningValue) {
+            alert("Flood Warning Value must be greater than Drought Warning Value.");
+            return false;
+        }
+
+        if (timeToleranceInMin < 30) {
+            alert("Time Tolerance must be at least 30 minutes.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
 }

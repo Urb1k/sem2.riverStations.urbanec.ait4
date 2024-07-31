@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using sem2.riverStations.urbanec.ait4.Filters;
 using sem2.riverStations.urbanec.ait4.StationInfomrations;
 
 namespace sem2.riverStations.urbanec.ait4.Controllers
@@ -7,6 +8,7 @@ namespace sem2.riverStations.urbanec.ait4.Controllers
     [Route("api")]
     public class StationController : Controller
     {
+
         private ApplicationDbContext _context { get; set; }
 
         public StationController(ApplicationDbContext context)
@@ -14,19 +16,23 @@ namespace sem2.riverStations.urbanec.ait4.Controllers
             _context = context;
         }
 
+        [TokenAuthorizationFilter]
         [HttpGet]
         [Route("get-stations")]
         public IActionResult GetListOfStations()
         {
+            
+
+
             var list = _context.Stations.ToList();
             return StatusCode(200,new JsonResult(list));
         }
 
-        
 
+        [TokenAuthorizationFilter]
         [HttpPost] // Change to HttpPost
         [Route("add-stations")]
-        public IActionResult AddStation([FromBody] Stations stations) // Add FromBody attribute
+        public IActionResult AddStation([FromBody] Station stations) // Add FromBody attribute
         {
             if (!ModelState.IsValid)
             {

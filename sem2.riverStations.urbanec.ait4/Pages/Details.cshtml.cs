@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -19,25 +18,33 @@ namespace sem2.riverStations.urbanec.ait4.Pages.Shared
             _context = context;
         }
 
-        public Stations Stations { get; set; } = default!;
+        public Station Stations { get; set; } = default!;
+        public List<HistoryValues> HistoryValues { get; set; } = new List<HistoryValues>();
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id, int startIndex = 0, int batchSize = 10)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var stations = await _context.Stations.FirstOrDefaultAsync(m => m.ID == id);
-            if (stations == null)
+            Stations = await _context.Stations.FirstOrDefaultAsync(m => m.ID == id);
+
+            if (Stations == null)
             {
                 return NotFound();
             }
-            else
-            {
-                Stations = stations;
-            }
+
+            // Fetch history values associated with this station based on startIndex and batchSize
+            HistoryValues = await _context.HistoryValues
+                .Where(h => h.StationID == id)
+                .OrderByDescending(h => h.Timestamp)
+                .Skip(startIndex)
+                .Take(batchSize)
+                .ToListAsync();
+
             return Page();
         }
+
     }
 }

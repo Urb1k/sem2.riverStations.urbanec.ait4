@@ -1,0 +1,35 @@
+﻿@page
+@model sem2.riverStations.urbanec.ait4.Pages.TokenChangerModel
+@{
+}
+
+<h1>TokenChanger and Technical Site</h1>
+<hr>
+<form method="post">
+    <div class="form-group">
+        <label for="textInput">Enter Text:</label>
+        <input type="text" class="form-control" id="textInput" name="textInput">
+    </div>
+    <button type="submit" class="btn btn-primary">Hash Text</button>
+</form>
+
+@if (Model.HashResult != null)
+{
+    <h2>Hashed Text:</h2>
+    <p>@Model.HashResult</p>
+}
+
+@if (Model.Tokens != null && Model.Tokens.Any())
+{
+    <h2>Tokens:</h2>
+    @foreach (var token in Model.Tokens)
+    {
+        <div>
+            <span>@token.Token</span>
+            <form method="post" asp-page-handler="Delete">
+                <input type="hidden" name="token" value="@token.Token" />
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this token?')">Delete</button>
+            </form>
+        </div>
+    }
+}

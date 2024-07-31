@@ -64,7 +64,7 @@ namespace sem2.riverStations.urbanec.ait4.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            ///[Required]
             [EmailAddress]
             public string Email { get; set; }
 
@@ -120,7 +120,11 @@ namespace sem2.riverStations.urbanec.ait4.Areas.Identity.Pages.Account
                 }
                 if (result.RequiresTwoFactor)
                 {
+                    /*
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    */
+                    _logger.LogInformation("User logged in.");
+                    return LocalRedirect(returnUrl);
                 }
                 if (result.IsLockedOut)
                 {

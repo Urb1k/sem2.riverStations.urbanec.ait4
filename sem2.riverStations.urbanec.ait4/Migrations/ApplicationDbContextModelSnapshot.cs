@@ -17,7 +17,7 @@ namespace sem2.riverStations.urbanec.ait4.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -224,7 +224,7 @@ namespace sem2.riverStations.urbanec.ait4.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("sem2.riverStations.urbanec.ait4.StationInfomrations.HistoryValues", b =>
+            modelBuilder.Entity("sem2.riverStations.urbanec.ait4.Services.TokenSetUp", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -232,7 +232,22 @@ namespace sem2.riverStations.urbanec.ait4.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int>("StationsID")
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("TokenSetUp");
+                });
+
+            modelBuilder.Entity("sem2.riverStations.urbanec.ait4.StationInfomrations.HistoryValues", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("StationID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
@@ -243,12 +258,12 @@ namespace sem2.riverStations.urbanec.ait4.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("StationsID");
+                    b.HasIndex("StationID");
 
                     b.ToTable("HistoryValues");
                 });
 
-            modelBuilder.Entity("sem2.riverStations.urbanec.ait4.StationInfomrations.Stations", b =>
+            modelBuilder.Entity("sem2.riverStations.urbanec.ait4.StationInfomrations.Station", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -257,7 +272,6 @@ namespace sem2.riverStations.urbanec.ait4.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("CreatedByUser")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedOn")
@@ -334,13 +348,13 @@ namespace sem2.riverStations.urbanec.ait4.Migrations
 
             modelBuilder.Entity("sem2.riverStations.urbanec.ait4.StationInfomrations.HistoryValues", b =>
                 {
-                    b.HasOne("sem2.riverStations.urbanec.ait4.StationInfomrations.Stations", "Stations")
+                    b.HasOne("sem2.riverStations.urbanec.ait4.StationInfomrations.Station", "Station")
                         .WithMany()
-                        .HasForeignKey("StationsID")
+                        .HasForeignKey("StationID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Stations");
+                    b.Navigation("Station");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using sem2.riverStations.urbanec.ait4.Services;
 
 namespace sem2.riverStations.urbanec.ait4.Pages
 {
@@ -11,7 +13,10 @@ namespace sem2.riverStations.urbanec.ait4.Pages
         {
             _logger = logger;
         }
-
+        public void OnGet()
+        {
+            Hangfire.BackgroundJob.Enqueue<EmailSender>(x => x.SendEmailAsync("vojtisek.urbanec@gmail.com", "body", "body"));
+        }
     }
 
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace sem2.riverStations.urbanec.ait4.Migrations
 {
     /// <inheritdoc />
-    public partial class FirstMigration : Migration
+    public partial class INITDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -60,12 +60,25 @@ namespace sem2.riverStations.urbanec.ait4.Migrations
                     FloodWarningValue = table.Column<int>(type: "int", nullable: false),
                     DroughtWarningValue = table.Column<int>(type: "int", nullable: false),
                     TimeToleranceInMin = table.Column<int>(type: "int", nullable: false),
-                    CreatedByUser = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedByUser = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Stations", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TokenSetUp",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TokenSetUp", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,9 +191,8 @@ namespace sem2.riverStations.urbanec.ait4.Migrations
                 name: "HistoryValues",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StationsID = table.Column<int>(type: "int", nullable: false),
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StationID = table.Column<int>(type: "int", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Value = table.Column<int>(type: "int", nullable: false)
                 },
@@ -188,8 +200,8 @@ namespace sem2.riverStations.urbanec.ait4.Migrations
                 {
                     table.PrimaryKey("PK_HistoryValues", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_HistoryValues_Stations_StationsID",
-                        column: x => x.StationsID,
+                        name: "FK_HistoryValues_Stations_StationID",
+                        column: x => x.StationID,
                         principalTable: "Stations",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
@@ -235,9 +247,9 @@ namespace sem2.riverStations.urbanec.ait4.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HistoryValues_StationsID",
+                name: "IX_HistoryValues_StationID",
                 table: "HistoryValues",
-                column: "StationsID");
+                column: "StationID");
         }
 
         /// <inheritdoc />
@@ -260,6 +272,9 @@ namespace sem2.riverStations.urbanec.ait4.Migrations
 
             migrationBuilder.DropTable(
                 name: "HistoryValues");
+
+            migrationBuilder.DropTable(
+                name: "TokenSetUp");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

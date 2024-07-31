@@ -5,62 +5,85 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Stations[0].River)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Stations[0].FloodWarningValue)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Stations[0].DroughtWarningValue)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Stations[0].TimeToleranceInMin)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Stations[0].CreatedByUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Stations[0].CreatedOn)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Stations) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.River)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FloodWarningValue)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DroughtWarningValue)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TimeToleranceInMin)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedByUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedOn)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
+<style>
+    .page-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .stations-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 1200px; /* Optional: Limit maximum width of stations container */
+    }
+
+    .station {
+        position: relative;
+        width: 200px;
+        height: 100px;
+        background-color: white;
+        border-radius: 20px;
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid black;
+    }
+
+    .danger-icon {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        color: red;
+        width: 50px;
+        height: 50px;
+    }
+
+        .no-stations-message {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+    }
+
+    .no-stations-message p {
+        font-size: 1.5em;
+        text-align: center;
+    }
+</style>
+
+<h1>River Stations</h1>
+@if (Model.Stations.Count <= 0)
+{
+    <div class="no-stations-message">
+        <p>There are no stations added yet. You can add a new station in the <strong>Stations</strong> card on the top of this page.</p>
+    </div>
 }
-    </tbody>
-</table>
+<div class="page-container">
+    <div class="stations-container">
+        @foreach (var station in Model.Stations)
+        {
+            <div class="station" style="background-color: @(station.MeanValue > station.FloodWarningValue ? "red" : station.MeanValue < station.DroughtWarningValue ? "yellow" : "white"); border: 5px solid black;">
+                <h3>@station.StationName</h3>
+                @if (station.MeanValue > station.FloodWarningValue)
+                {
+                    <svg class="danger-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="yellow">
+                      <text x="0" y="18" font-size="20">&#9888;</text>
+                    </svg>
+                }
+                else if (station.MeanValue < station.DroughtWarningValue)
+                {
+                    <svg class="danger-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="red">
+                      <text x="0" y="18" font-size="20">&#9888;</text>
+                    </svg>
+                }
+                <p>Average Value: <strong>@station.MeanValue</strong></p>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    setInterval(function() {
+        location.reload();
+    }, 5000);
+</script>

@@ -21,7 +21,7 @@ namespace sem2.riverStations.urbanec.ait4.Pages.Shared
         }
 
         [BindProperty]
-        public Stations Stations { get; set; } = default!;
+        public Station Stations { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {

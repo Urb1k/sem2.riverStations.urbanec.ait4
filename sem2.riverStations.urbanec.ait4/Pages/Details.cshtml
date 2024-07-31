@@ -51,5 +51,96 @@
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.Stations.ID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Stations">Back to List</a>
 </div>
+<div>
+    <h4>History Values</h4>
+    <hr />
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>River</th>
+                <th>Timestamp</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody id="historyValuesBody">
+            @foreach (var item in Model.HistoryValues)
+            {
+                var riverName = item.Station?.River ?? "Unknown"; // Default to "Unknown" if River is null
+                var floodWarningValue = item.Station?.FloodWarningValue ?? 0;
+                var droughtWarningValue = item.Station?.DroughtWarningValue ?? 0;
+                var value = item.Value;
+
+                // Determine the color based on the value
+                string circleColor = "";
+                string textColor = "";
+                if (value > floodWarningValue)
+                {
+                    circleColor = "red";
+                    textColor = "black";
+                }
+                else if (value < droughtWarningValue)
+                {
+                    circleColor = "orange";
+                    textColor = "black";
+                }
+                else
+                {
+                    circleColor = "darkgreen";
+                    textColor = "black"; // Adjusted text color for better visibility
+                }
+            <tr>
+                <td>@riverName</td>
+                <td>@item.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td style="color: @textColor;">
+                    <div style="display: flex; align-items: center;">
+                        <div style="width: 20px; height: 20px; border-radius: 50%; background-color: @circleColor; margin-right: 10px;"></div>
+                        @value
+                    </div>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    var startIndex = @Model.HistoryValues.Count;
+    var batchSize = 10;
+
+    function loadMore() {
+        var url = `/Shared/Details?id=@Model.Stations.ID&startIndex=${startIndex}&batchSize=${batchSize}`;
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(data, 'text/html');
+                var newRows = doc.getElementById('historyValuesBody').innerHTML;
+                document.getElementById('historyValuesBody').innerHTML += newRows;
+                if (doc.getElementById('loadMoreBtn') == null) {
+                    document.getElementById('loadMoreBtn').setAttribute('disabled', 'disabled');
+                }
+                startIndex += batchSize;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function refresh() {
+        var url = `/Shared/Details?id=@Model.Stations.ID&startIndex=0&batchSize=${batchSize}`;
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(data, 'text/html');
+                var newRows = doc.getElementById('historyValuesBody').innerHTML;
+                document.getElementById('historyValuesBody').innerHTML = newRows;
+                startIndex = batchSize;
+                document.getElementById('loadMoreBtn').removeAttribute('disabled');
+            })
+            .catch(error => console.error('Error:', error));
+
+
+    }
+</script>

@@ -3,32 +3,169 @@
 
 @{
     ViewData["Title"] = "History Values List";
+    int currentPage = Model.StartIndex / Model.BatchSize + 1;
+    int startRecord = Model.StartIndex + 1;
+    int endRecord = Math.Min(Model.StartIndex + Model.BatchSize, Model.HistoryValuesList.Count);
+    int totalRecords = Model.HistoryValuesList.Count;
 }
 
 <h2>@ViewData["Title"]</h2>
 
 <div class="table-responsive">
-    <table class="table table-striped">
+    <table id="historyValuesTable" class="table table-striped">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Station</th>
-                <th>Timestamp</th>
-                <th>Value</th>
+                <th><button onclick="sortTable(0, false);">Station ▼</button></th>
+                <th><button onclick="sortTable(1, true);">Timestamp ▼</button></th>
+                <th><button onclick="sortTable(2, true);">Value ▼</button></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.HistoryValuesList)
             {
-                var riverName = item.Stations?.River ?? "Unknown"; // Default to "Unknown" if River is null
-                var floodWarningValue = item.Stations?.FloodWarningValue ?? 0;
+                var riverName = item.Station?.River ?? "Unknown"; // Default to "Unknown" if River is null
+                var floodWarningValue = item.Station?.FloodWarningValue ?? 0;
+                var droughtWarningValue = item.Station?.DroughtWarningValue ?? 0;
+                var value = item.Value;
+
+                // Determine the color and circle based on the value
+                string circleColor = "";
+                string textColor = "";
+                if (value > floodWarningValue)
+                {
+                    circleColor = "red";
+                    textColor = "black";
+                }
+                else if (value < droughtWarningValue)
+                {
+                    circleColor = "orange";
+                    textColor = "black";
+                }
+                else
+                {
+                    circleColor = "darkgreen";
+                    textColor = "black"; // Adjusted text color for better visibility
+                }
                 <tr>
-                    <td>@item.ID</td>
                     <td>@riverName</td>
                     <td>@item.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                    <td style="@(item.Value > floodWarningValue ? "color: red;" : "")">@item.Value</td>
+                    <td style="color: @textColor;">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 20px; height: 20px; border-radius: 50%; background-color: @circleColor; margin-right: 10px;"></div>
+                            @value
+                        </div>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+<div style="margin-top: 20px;">
+    @if (startRecord != 1){
+        <button onclick="loadPrevious()">Previous 20</button>
+    }
+    <span>Showing records @startRecord to @(startRecord+totalRecords-1) of @Model.TotalRecords</span>
+    @if (Model.HistoryValuesList.Count >= Model.BatchSize)
+    {
+        <button onclick="loadNext()">Next 20</button>
+    }
+</div>
+
+<script>
+    // Function to save the selected filter state to local storage
+    function saveFilterState(columnIndex, descending) {
+        var filterState = {
+            columnIndex: columnIndex,
+            descending: descending
+        };
+        localStorage.setItem('filterState', JSON.stringify(filterState));
+    }
+
+    // Function to load the stored filter state from local storage and apply it
+    function applyStoredFilterState() {
+        var filterState = localStorage.getItem('filterState');
+        if (filterState) {
+            filterState = JSON.parse(filterState);
+            sortTable(filterState.columnIndex, filterState.descending);
+        }
+    }
+
+    // Function to load previous set of records
+    function loadPrevious() {
+        var prevStartIndex = Math.max(0, @Model.StartIndex - @Model.BatchSize);
+        window.location.href = `/HistoryOfValues?startIndex=${prevStartIndex}&batchSize=${@Model.BatchSize}`;
+    }
+
+    // Function to load next set of records
+    function loadNext() {
+        var nextStartIndex = @Model.StartIndex + @Model.BatchSize;
+        window.location.href = `/HistoryOfValues?startIndex=${nextStartIndex}&batchSize=${@Model.BatchSize}`;
+    }
+
+    // Function to sort table rows by column index and toggle between ascending and descending order
+    function sortTable(columnIndex, descending) {
+        var table, rows, switching, i, x, y, shouldSwitch;
+        table = document.querySelector('.table');
+        switching = true;
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[columnIndex]; // Get the cell value
+                y = rows[i + 1].getElementsByTagName("TD")[columnIndex]; // Get the cell value of the next row
+                if (columnIndex === 1) { // Timestamp column
+                    if (descending) {
+                        if (new Date(x.innerHTML) < new Date(y.innerHTML)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        if (new Date(x.innerHTML) > new Date(y.innerHTML)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                } else if (columnIndex === 2) { // Value column
+                    if (descending) {
+                        if (parseFloat(x.textContent) < parseFloat(y.textContent)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        if (parseFloat(x.textContent) > parseFloat(y.textContent)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                } else { // Default sorting (text columns)
+                    if (descending) {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+        // Save the selected filter state
+        saveFilterState(columnIndex, descending);
+    }
+    
+    // Apply the stored filter state on page load
+    document.addEventListener('DOMContentLoaded', applyStoredFilterState);
+
+    // Function to reload the page every 5 seconds
+    setInterval(function() {
+        location.reload();
+    }, 5000); // 5000 milliseconds = 5 seconds
+</script>
